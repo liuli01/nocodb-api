@@ -24,6 +24,9 @@ class Table:
         self.title = kwargs["title"]
         self.metadata = kwargs
 
+    def get_base(self) -> Base:
+        return self.noco_db.get_base(self.base_id)
+
     def get_basic_metadata(self) -> dict:
         m = self.metadata.copy()
         extra_keys = ["columns", "views", "columnsById"]
@@ -147,5 +150,31 @@ class Table:
         ids_string = ','.join([str(d["Id"]) for d in r.json()])
         return self.get_records(params={"where": f"(Id,in,{ids_string})"})
 
-    def get_base(self) -> Base:
-        return self.noco_db.get_base(self.base_id)
+
+    
+
+    def update_records(self, records: list[dict]) -> list[Record]:
+        r = self.noco_db.call_noco(path=f"tables/{self.table_id}/records",
+                                   method="PATCH",
+                                   json=records)
+        ids_string = ','.join([str(d["Id"]) for d in r.json()])
+        return self.get_records(params={"where": f"(Id,in,{ids_string})"})
+    
+    def update_record(self, **kwargs) -> Record:
+        r = self.noco_db.call_noco(path=f"tables/{self.table_id}/records",
+                                   method="PATCH",
+                                   json=kwargs)
+        return self.get_record(record_id=r.json()["Id"])
+    
+    def delete_records(self, record_ids: list[int]) -> bool:
+        r = self.noco_db.call_noco(path=f"tables/{self.table_id}/records",
+                                   method="DELETE",
+                                   json=[{"Id": i} for i in record_ids])
+        return r.json()
+    
+    def delete_record(self, record_id: int) -> bool:
+        r = self.noco_db.call_noco(path=f"tables/{self.table_id}/records",
+                                   method="DELETE",
+                                   json={"Id": record_id})
+        return r.json()
+    

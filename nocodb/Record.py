@@ -66,3 +66,4 @@ class Record:
 
         return [self.noco_db.get_file(p["signedPath"], encoding=encoding)
                 for p in value_list]
+    

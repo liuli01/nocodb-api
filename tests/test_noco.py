@@ -166,3 +166,7 @@ class Test03Records(TestData, unittest.TestCase):
         # get_record
         # get_records_by_field_value
         # create_records
+
+        # update_record
+
+        # delete_record
